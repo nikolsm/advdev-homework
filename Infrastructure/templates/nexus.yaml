@@ -1,0 +1,209 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: nexus-template
+  annotations:
+    description: "Description"
+
+objects:
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    name: nexus3
+    annotations:
+    labels:
+      app: nexus3
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: nexus3
+      deploymentconfig: nexus3
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+        labels:
+          app: nexus3
+          deploymentconfig: nexus3
+      spec:
+        containers:
+        - image: docker.io/sonatype/nexus3@sha256:262f9f2b5e61ebbee068a23acfdad8283d8b9285b9f99a8b38bb8c65b2a13071
+          imagePullPolicy: Always
+          name: nexus3
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          readinessProbe:
+            exec:
+              command:
+              - echo
+              - ok
+            failureThreshold: 3
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: "2"
+              memory: 2Gi
+            requests:
+              cpu: "1"
+              memory: 1Gi
+            ports:
+              - containerPort: 8081
+                protocol: TCP
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /nexus-data
+            name: nexus3-pvc
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: nexus3-pvc
+          persistentVolumeClaim: 
+            claimName: nexus3-pvc
+    test: false
+    triggers:
+      - type: ConfigChange
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+            - nexus3
+          from:
+            kind: ImageStreamTag
+            name: 'nexus3:latest'
+        type: ImageChange
+
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+    labels:
+      app: nexus3
+    name: nexus3
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+      - annotations:
+          openshift.io/imported-from: 'docker.io/sonatype/nexus3:latest'
+        from:
+          kind: DockerImage
+          name: 'docker.io/sonatype/nexus3:latest'
+        importPolicy: {}
+        name: latest
+        referencePolicy:
+          type: Source
+
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+    labels:
+      app: nexus3
+    name: nexus3
+  spec:
+    ports:
+      - name: 8081-tcp
+        port: 8081
+        protocol: TCP
+        targetPort: 8081
+    selector:
+      app: nexus3
+      deploymentconfig: nexus3
+    sessionAffinity: None
+    type: ClusterIP
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: 2018-11-13T18:17:09Z
+    labels:
+      app: nexus3
+    name: nexus-registry
+  spec:
+    ports:
+    - port: 5000
+      protocol: TCP
+      targetPort: 5000
+    selector:
+      app: nexus3
+      deploymentconfig: nexus3
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+
+
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+    labels:
+      app: nexus3
+    name: nexus-registry
+  spec:
+    port:
+      targetPort: 5000
+    to:
+      kind: Service
+      name: nexus-registry
+      weight: 100
+    wildcardPolicy: None
+
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+    labels:
+      app: nexus3
+    name: nexus3
+  spec:
+    port:
+      targetPort: 8081-tcp
+    to:
+      kind: Service
+      name: nexus3
+      weight: 100
+    wildcardPolicy: None
+
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: nexus3-pvc
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+
+
+parameters:
+
+labels:
+
