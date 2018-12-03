@@ -83,7 +83,7 @@ podTemplate(
   // Deploy the built image to the Development Environment.
   stage('Deploy to Dev') {
     echo "Deploying container image to Development Project"
-    sh "oc set image dc/mlbparks mlbparks=docker-registry.default.svc:5000/${GUID}-parks-dev/mlbparks:${devTag} -n ${GUID}-mlbparks-dev"
+    sh "oc set image dc/mlbparks mlbparks=docker-registry.default.svc:5000/${GUID}-parks-dev/mlbparks:${devTag} -n ${GUID}-parks-dev"
 
     openshiftDeploy depCfg: 'mlbparks', namespace: '${GUID}-parks-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
     openshiftVerifyDeployment depCfg: 'mlbparks', namespace: '${GUID}-parks-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
