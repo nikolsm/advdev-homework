@@ -65,14 +65,19 @@ podTemplate(
   stage('Publish to Nexus') {
     echo "Publish to Nexus"
   
-    sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.9563-nexus.svc.cluster.local:8081/repository/releases"
+    sh "cd MLBParks; ${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.9563-nexus.svc.cluster.local:8081/repository/releases"
 
   }
 
   // Build the OpenShift Image in OpenShift and tag it.
   stage('Build and Tag OpenShift Image') {
     echo "Building OpenShift container image tasks:${devTag}"
-   // TBD
+
+    sh "oc start-build tasks --follow --from-file=http://nexus3.9563-nexus.svc.cluster.local:8081/repository/releases/org/jboss/quickstarts/eap/tasks/${version}/mlbparks-${version}.war -n 9563-parks-dev"
+
+    // Tag the image using the devTag
+    openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: '9563-parks-dev', namespace: '9563-parks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false'
+  
   }
 
   // Deploy the built image to the Development Environment.
