@@ -76,7 +76,7 @@ podTemplate(
     sh "oc start-build tasks --follow --from-file=http://nexus3.9563-nexus.svc.cluster.local:8081/repository/releases/com/openshift/evg/roadshow/mlbparks/${version}/mlbparks-${version}.war -n 9563-parks-dev"
 
     // Tag the image using the devTag
-    openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: '9563-parks-dev', namespace: '9563-parks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false'
+    openshiftTag alias: 'false', destStream: 'mlbparks', destTag: devTag, destinationNamespace: '9563-parks-dev', namespace: '9563-parks-dev', srcStream: 'mlbparks', srcTag: 'latest', verbose: 'false'
   
   }
 
