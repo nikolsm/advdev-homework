@@ -101,7 +101,7 @@ podTemplate(
   stage('Copy Image to Nexus Docker Registry') {
     echo "Copy image to Nexus Docker Registry"
     
-    sh "skopeo --debug copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:admin123 docker://docker-registry.default.svc.cluster.local:5000/${GUID}-parks-dev/mlbparks:${devTag} docker://nexus-registry.${GUID}-nexus.svc.cluster.local:5000/docker/mlbparks:${devTag}"
+    sh "skopeo --debug copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:admin123 docker://docker-registry.default.svc.cluster.local:5000/${GUID}-parks-dev/mlbparks:${devTag} docker://nexus-registry.${GUID}-nexus.svc.cluster.local:5000/mlbparks:${devTag}"
 
 
     openshiftTag alias: 'false', destStream: 'mlbparks', destTag: prodTag, destinationNamespace: '${GUID}-parks-dev', namespace: '${GUID}-parks-dev', srcStream: 'mlbparks', srcTag: devTag, verbose: 'false'
