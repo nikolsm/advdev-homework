@@ -87,7 +87,7 @@ podTemplate(
 
     openshiftDeploy depCfg: 'mlbparks', namespace: '${GUID}-parks-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
     openshiftVerifyDeployment depCfg: 'mlbparks', namespace: '${GUID}-parks-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
-    openshiftVerifyService namespace: '${GUID}-parks-dev', svcName: 'mblparks', verbose: 'false'
+    openshiftVerifyService namespace: '${GUID}-parks-dev', svcName: 'mlbparks', verbose: 'false'
 
   }
 
