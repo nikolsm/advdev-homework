@@ -40,3 +40,6 @@ while : ; do
   sleep 10
 done
 
+echo "Configuring Nexus for applications binaries repository and docker image registry"
+
+./configure_nexus.sh admin admin123 http://nexus3-${GUID}-nexus.apps.na39.openshift.opentlc.com
