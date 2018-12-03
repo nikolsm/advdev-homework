@@ -25,7 +25,7 @@ podTemplate(
      
 
   stage('Checkout Source') {
-    // TBD
+    git url: 'https://github.com/nikolsm/advdev-homework.git'
   }
 
   // The following variables need to be defined at the top level
