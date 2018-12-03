@@ -12,3 +12,5 @@ echo "Setting up Parks Development Environment in project ${GUID}-parks-dev"
 # Code to set up the parks development project.
 
 # To be Implemented by Student
+
+oc new-app -f ../templates/parks-dev.yaml -n ${GUID}-parks-dev
