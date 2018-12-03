@@ -52,13 +52,13 @@ podTemplate(
   // Using Maven run the unit tests
   stage('Unit Tests') {
     echo "Running Unit Tests"
-    // TBD
+    sh "cd MLBParks; ${mvnCmd} test"
   }
 
   // Using Maven call SonarQube for Code Analysis
   stage('Code Analysis') {
     echo "Running Code Analysis"
-    // TBD
+    sh "cd MLBParks; ${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-9563-sonarqube.apps.na39.openshift.opentlc.com  -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
   }
 
   // Publish the built war file to Nexus
