@@ -58,14 +58,14 @@ podTemplate(
   // Using Maven call SonarQube for Code Analysis
   stage('Code Analysis') {
     echo "Running Code Analysis"
-    sh "cd MLBParks; ${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-9563-sonarqube.apps.na39.openshift.opentlc.com  -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+    sh "cd MLBParks; ${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.na39.openshift.opentlc.com  -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
   }
 
   // Publish the built war file to Nexus
   stage('Publish to Nexus') {
     echo "Publish to Nexus"
   
-    sh "cd MLBParks; ${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.9563-nexus.svc.cluster.local:8081/repository/releases"
+    sh "cd MLBParks; ${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/releases"
 
   }
 
@@ -73,17 +73,22 @@ podTemplate(
   stage('Build and Tag OpenShift Image') {
     echo "Building OpenShift container image tasks:${devTag}"
 
-    sh "oc start-build mlbparks --follow --from-file=http://nexus3.9563-nexus.svc.cluster.local:8081/repository/releases/com/openshift/evg/roadshow/mlbparks/${version}/mlbparks-${version}.war -n 9563-parks-dev"
+    sh "oc start-build mlbparks --follow --from-file=http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/releases/com/openshift/evg/roadshow/mlbparks/${version}/mlbparks-${version}.war -n ${GUID}-parks-dev"
 
     // Tag the image using the devTag
-    openshiftTag alias: 'false', destStream: 'mlbparks', destTag: devTag, destinationNamespace: '9563-parks-dev', namespace: '9563-parks-dev', srcStream: 'mlbparks', srcTag: 'latest', verbose: 'false'
+    openshiftTag alias: 'false', destStream: 'mlbparks', destTag: devTag, destinationNamespace: '${GUID}-parks-dev', namespace: '${GUID}-parks-dev', srcStream: 'mlbparks', srcTag: 'latest', verbose: 'false'
   
   }
 
   // Deploy the built image to the Development Environment.
   stage('Deploy to Dev') {
     echo "Deploying container image to Development Project"
-    // TBD
+    sh "oc set image dc/mlbparks mlbparks=docker-registry.default.svc:5000/${GUID}-parks-dev/mlbparks:${devTag} -n ${GUID}-mlbparks-dev"
+
+    openshiftDeploy depCfg: 'mlbparks', namespace: '${GUID}-parks-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
+    openshiftVerifyDeployment depCfg: 'mlbparks', namespace: '${GUID}-parks-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
+    openshiftVerifyService namespace: '${GUID}-parks-dev', svcName: 'mblparks', verbose: 'false'
+
   }
 
   // Run Integration Tests in the Development Environment.
