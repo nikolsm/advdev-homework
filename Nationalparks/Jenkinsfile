@@ -78,7 +78,7 @@ podTemplate(
     sh "oc start-build nationalparks --follow --from-file=http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/releases/com/openshift/evg/roadshow/nationalparks/${version}/nationalparks-${version}.jar -n ${GUID}-parks-dev"
 
     // Tag the image using the devTag
-    openshiftTag alias: 'false', destStream: 'nationalparks', destTag: devTag, destinationNamespace: '${GUID}-parks-dev', namespace: '${GUID}-parks-dev', srcStream: 'naionalparks', srcTag: 'latest', verbose: 'false'
+    openshiftTag alias: 'false', destStream: 'nationalparks', destTag: devTag, destinationNamespace: '${GUID}-parks-dev', namespace: '${GUID}-parks-dev', srcStream: 'nationalparks', srcTag: 'latest', verbose: 'false'
   
   }
 
