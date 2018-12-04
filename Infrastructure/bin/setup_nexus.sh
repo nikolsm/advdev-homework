@@ -34,11 +34,16 @@ oc new-app -f ../templates/nexus.yaml -n 9563-nexus
 
 while : ; do
   echo "Checking if Nexus is Ready..."
-  oc get pod -n ${GUID}-nexus|grep -v deploy|grep "1/1"
+  oc get pod -n ${GUID}-nexus|grep '\-1\-'|grep -v deploy|grep "1/1"
   [[ "$?" == "1" ]] || break
   echo "...no. Sleeping 10 seconds."
   sleep 10
 done
+
+# will need to figure this out later. don't have time right now.
+echo "wait for few  minutes for nexus to fully come up"
+sleep 120
+
 
 echo "Configuring Nexus for applications binaries repository and docker image registry"
 
