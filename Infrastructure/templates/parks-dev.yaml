@@ -295,7 +295,7 @@ objects:
     DB_PORT: "27017"
     DB_USERNAME: ${MONGODB_USER}
     DB_PASSWORD: ${MONGODB_PASSWORD}
-    DB_NAME: ${MONGODB_DATABASE}
+    DB_NAME: "parks"
     DB_REPLICASET: "rs0"
     APPNAME: "MLB Parks (Dev)"
 
@@ -310,7 +310,14 @@ objects:
     DB_PASSWORD: ${MONGODB_PASSWORD}
     DB_NAME: parks
     DB_REPLICASET: "rs0"
-    APPNAME: " National Parks (Dev)"
+    APPNAME: "National Parks (Dev)"
+
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: parksmap
+  data:
+    APPNAME: "ParksMap (Dev)"
 
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
@@ -332,6 +339,13 @@ objects:
         maxUnavailable: 25%
         timeoutSeconds: 600
         updatePeriodSeconds: 1
+        post:
+          execNewPod:
+            command:
+              - curl
+              - 'http://mlbparks:8080/ws/data/load/'
+            containerName: mlbparks
+          failurePolicy: Abort
       type: Rolling
     template:
       metadata:
@@ -345,7 +359,27 @@ objects:
                   name: mlbparks
             image: 'docker-registry.default.svc:5000/9563-parks-dev/mlbparks:0.0-0'
             imagePullPolicy: IfNotPresent
+            livenessProbe:
+              exec:
+                command:
+                  - echo
+                  - '"ok"'
+              failureThreshold: 3
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
             name: mlbparks
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /ws/healthz/
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
             resources: {}
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
@@ -378,6 +412,13 @@ objects:
         maxUnavailable: 25%
         timeoutSeconds: 600
         updatePeriodSeconds: 1
+        post:
+          execNewPod:
+            command:
+              - curl
+              - 'http://nationalparks:8080/ws/data/load/'
+            containerName: nationalparks
+          failurePolicy: Abort
       type: Rolling
     template:
       metadata:
@@ -391,7 +432,27 @@ objects:
                   name: nationalparks
             image: 'docker-registry.default.svc:5000/9563-parks-dev/nationalparks:0.0-0'
             imagePullPolicy: IfNotPresent
-            name: mlbparks
+            livenessProbe:
+              exec:
+                command:
+                  - echo
+                  - '"ok"'
+              failureThreshold: 3
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            name: nationalparks
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /ws/healthz/
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
             resources: {}
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
@@ -433,6 +494,8 @@ objects:
       spec:
         containers:
           - envFrom:
+              - configMapRef:
+                  name: parksmap
             image: 'docker-registry.default.svc:5000/9563-parks-dev/parksmap:0.0-0'
             imagePullPolicy: IfNotPresent
             name: parksmap
@@ -546,7 +609,7 @@ parameters:
   displayName: MongoDB Database Name
   name: MONGODB_DATABASE
   required: true
-  value: mongodb
+  value: parks
 - description: Password for the database admin user.
   displayName: MongoDB Admin Password
   name: MONGODB_ADMIN_PASSWORD
