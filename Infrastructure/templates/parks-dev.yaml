@@ -603,6 +603,19 @@ objects:
     - kind: ServiceAccount
       name: default
 
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: 'system:image-puller'
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: 'system:image-puller'
+  subjects:
+    - apiGroup: rbac.authorization.k8s.io
+      kind: Group
+      name: 'system:serviceaccounts:9563-parks-prod'
+
 
 parameters:
 - description: Maximum amount of memory the container can use.

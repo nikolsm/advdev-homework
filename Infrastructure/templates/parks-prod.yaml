@@ -164,128 +164,6 @@ objects:
   status: {}
 
 
-- apiVersion: build.openshift.io/v1
-  kind: BuildConfig
-  metadata:
-    annotations:
-    labels:
-      build: mlbparks
-    name: mlbparks
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: 'mlbparks:latest'
-    postCommit: {}
-    resources: {}
-    runPolicy: Serial
-    source:
-      binary: {}
-      type: Binary
-    strategy:
-      sourceStrategy:
-        from:
-          kind: ImageStreamTag
-          name: 'jboss-eap70-openshift:1.7'
-          namespace: openshift
-      type: Source
-
-- apiVersion: build.openshift.io/v1
-  kind: BuildConfig
-  metadata:
-    annotations:
-    labels:
-      build: nationalparks
-    name: nationalparks
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: 'nationalparks:latest'
-    postCommit: {}
-    resources: {}
-    runPolicy: Serial
-    source:
-      binary: {}
-      type: Binary
-    strategy:
-      sourceStrategy:
-        from:
-          kind: ImageStreamTag
-          name: 'redhat-openjdk18-openshift:1.2'
-          namespace: openshift
-      type: Source
-
-
-- apiVersion: build.openshift.io/v1
-  kind: BuildConfig
-  metadata:
-    annotations:
-    labels:
-      build: parksmap
-    name: parksmap
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: 'parksmap:latest'
-    postCommit: {}
-    resources: {}
-    runPolicy: Serial
-    source:
-      binary: {}
-      type: Binary
-    strategy:
-      sourceStrategy:
-        from:
-          kind: ImageStreamTag
-          name: 'redhat-openjdk18-openshift:1.2'
-          namespace: openshift
-      type: Source
-
-- apiVersion: image.openshift.io/v1
-  kind: ImageStream
-  metadata:
-    annotations:
-    labels:
-      build: mlbparks
-    name: mlbparks
-  spec:
-    lookupPolicy:
-      local: false
-  status:
-    dockerImageRepository: 'docker-registry.default.svc:5000/9563-parks-dev/mlbparks'
-
-
-- apiVersion: image.openshift.io/v1
-  kind: ImageStream
-  metadata:
-    annotations:
-    labels:
-      build: nationalparks
-    name: nationalparks
-  spec:
-    lookupPolicy:
-      local: false
-  status:
-    dockerImageRepository: 'docker-registry.default.svc:5000/9563-parks-dev/nationalparks'
-
-- apiVersion: image.openshift.io/v1
-  kind: ImageStream
-  metadata:
-    annotations:
-    labels:
-      build: parksmap
-    name: parksmap
-  spec:
-    lookupPolicy:
-      local: false
-  status:
-    dockerImageRepository: 'docker-registry.default.svc:5000/9563-parks-dev/parksmap'
-
 - apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -395,13 +273,13 @@ objects:
   metadata:
     annotations:
     labels:
-      app: nationalparks
-    name: nationalparks
+      app: nationalparks-green
+    name: nationalparks-green
   spec:
     replicas: 1
     selector:
-      app: nationalparks
-      deploymentconfig: nationalparks
+      app: nationalparks-green
+      deploymentconfig: nationalparks-green
     strategy:
       resources: {}
       rollingParams:
@@ -415,19 +293,19 @@ objects:
             command:
               - curl
               - 'http://nationalparks:8080/ws/data/load/'
-            containerName: nationalparks
+            containerName: nationalparks-green
           failurePolicy: Abort
       type: Rolling
     template:
       metadata:
         labels:
-          app: nationalparks
-          deploymentconfig: nationalparks
+          app: nationalparks-green
+          deploymentconfig: nationalparks-green
       spec:
         containers:
           - envFrom:
               - configMapRef:
-                  name: nationalparks
+                  name: nationalparks-green
             image: 'docker-registry.default.svc:5000/9563-parks-dev/nationalparks:0.0-0'
             imagePullPolicy: IfNotPresent
             livenessProbe:
@@ -440,7 +318,7 @@ objects:
               periodSeconds: 10
               successThreshold: 1
               timeoutSeconds: 1
-            name: nationalparks
+            name: nationalparks-green
             readinessProbe:
               failureThreshold: 3
               httpGet:
@@ -513,41 +391,6 @@ objects:
   kind: Service
   metadata:
     labels:
-      type: parksmap-backend
-    name: mlbparks
-  spec:
-    ports:
-      - port: 8080
-        protocol: TCP
-        targetPort: 8080
-    selector:
-      app: mlbparks
-      deploymentconfig: mlbparks
-    sessionAffinity: None
-    type: ClusterIP
-
-
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      type: parksmap-backend
-    name: nationalparks
-  spec:
-    ports:
-      - port: 8080
-        protocol: TCP
-        targetPort: 8080
-    selector:
-      app: nationalparks
-      deploymentconfig: nationalparks
-    sessionAffinity: None
-    type: ClusterIP
-
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
       type: parksmap
     name: parksmap
   spec:
@@ -566,7 +409,6 @@ objects:
   kind: Route
   metadata:
     labels:
-      template: parks-dev
       type: parksmap
     name: parksmap
   spec:
