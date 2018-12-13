@@ -688,6 +688,24 @@ objects:
     sessionAffinity: None
     type: ClusterIP
 
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      type: parksmap
+    name: parksmap-blue
+  spec:
+    ports:
+      - port: 8080
+        protocol: TCP
+        targetPort: 8080
+    selector:
+      app: parksmap-blue
+      deploymentconfig: parksmap-blue
+    sessionAffinity: None
+    type: ClusterIP
+
+
 
 - apiVersion: route.openshift.io/v1
   kind: Route
