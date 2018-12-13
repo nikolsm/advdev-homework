@@ -141,16 +141,13 @@ podTemplate(
   }
 
   stage('Switch over to new Version') {
-    // TBD
     echo "Switching Production application to ${destApp}."
-    // TBD
+  
+    sh 'oc patch route tasks -n ${GUID}-parksmap-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
+
+
   }
 
-
-
-
- 
-  }
 }
 
 // Convenience Functions to read variables from the pom.xml
