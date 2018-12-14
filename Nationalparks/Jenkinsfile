@@ -119,7 +119,7 @@ podTemplate(
   stage('Blue/Green Production Deployment') {
     // TBD
   
-    activeApp = sh(returnStdout: true, script: "oc get service | grep nationalparks | awk '{print $1}'")
+    activeApp = sh(returnStdout: true, script: "oc get service | grep nationalparks | awk '{print "\$1"}'")
     if (activeApp == "nationalparks-green") {
       destApp = "nationalparks-blue"
     }
