@@ -185,7 +185,7 @@ objects:
     DB_PORT: "27017"
     DB_USERNAME: ${MONGODB_USER}
     DB_PASSWORD: ${MONGODB_PASSWORD}
-    DB_NAME: parks
+    DB_NAME: "parks"
     APPNAME: "National Parks (Green)"
 
 - apiVersion: v1
