@@ -653,6 +653,22 @@ objects:
     sessionAffinity: None
     type: ClusterIP
 
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+    name: mlbparks-blue
+  spec:
+    ports:
+      - port: 8080
+        protocol: TCP
+        targetPort: 8080
+    selector:
+      app: mlbparks-blue
+      deploymentconfig: mlbparks-blue
+    sessionAffinity: None
+    type: ClusterIP
+
 
 - apiVersion: v1
   kind: Service
@@ -668,6 +684,22 @@ objects:
     selector:
       app: nationalparks-green
       deploymentconfig: nationalparks-green
+    sessionAffinity: None
+    type: ClusterIP
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+    name: nationalparks-blue
+  spec:
+    ports:
+      - port: 8080
+        protocol: TCP
+        targetPort: 8080
+    selector:
+      app: nationalparks-blue
+      deploymentconfig: nationalparks-blue
     sessionAffinity: None
     type: ClusterIP
 
