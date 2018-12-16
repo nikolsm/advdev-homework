@@ -236,9 +236,9 @@ objects:
       spec:
         containers:
           - env:
-            - name: APPNAME
-              value: "MLB Parks (Green)"
-          - envFrom:
+              - name: APPNAME
+                value: "MLB Parks (Green)"
+            envFrom:
               - configMapRef:
                   name: mlbparks
             image: 'docker-registry.default.svc:5000/9563-parks-dev/mlbparks:0.0-0'
@@ -312,9 +312,9 @@ objects:
       spec:
         containers:
           - env:
-            - name: APPNAME
-              value: "MLB Parks (Blue)"
-          - envFrom:
+              - name: APPNAME
+                value: "MLB Parks (Blue)"
+            envFrom:
               - configMapRef:
                   name: mlbparks
             image: 'docker-registry.default.svc:5000/9563-parks-dev/mlbparks:0.0-0'
@@ -388,9 +388,9 @@ objects:
       spec:
         containers:
           - env:
-            - name: APPNAME
-              value: "National Parks (Blue)"
-          - envFrom:
+              - name: APPNAME
+                value: "National Parks (Blue)"
+            envFrom:
               - configMapRef:
                   name: nationalparks
             image: 'docker-registry.default.svc:5000/9563-parks-dev/nationalparks:0.0-0'
@@ -464,9 +464,9 @@ objects:
       spec:
         containers:
           - env:
-            - name: APPNAME
-              value: "National Parks (Green)"
-          - envFrom:
+              - name: APPNAME
+                value: "National Parks (Green)"
+            envFrom:
               - configMapRef:
                   name: nationalparks
             image: 'docker-registry.default.svc:5000/9563-parks-dev/nationalparks:0.0-0'
@@ -540,11 +540,8 @@ objects:
       spec:
         containers:
           - env:
-            - name: APPNAME
-              value: "ParksMap (Green)"
-          - envFrom:
-              - configMapRef:
-                  name: parksmap
+              - name: APPNAME
+                value: "ParksMap (Green)"
             image: 'docker-registry.default.svc:5000/9563-parks-dev/parksmap:0.0-0'
             imagePullPolicy: IfNotPresent
             name: parksmap-green
@@ -618,11 +615,8 @@ objects:
       spec:
         containers:
           - env:
-            - name: APPNAME
-              value: "ParksMap (Blue)"
-          - envFrom:
-              - configMapRef:
-                  name: parksmap
+              - name: APPNAME
+                value: "ParksMap (Blue)"
             image: 'docker-registry.default.svc:5000/9563-parks-dev/parksmap:0.0-0'
             imagePullPolicy: IfNotPresent
             name: parksmap-blue

@@ -18,3 +18,18 @@ echo "Resetting Parks Production Environment in project ${GUID}-parks-prod to Gr
 # rollout followed by a Green rollout.
 
 # To be Implemented by Student
+
+
+oc patch route/parksmap -n ${GUID}-parks-prod -p '{"spec":{"to":{"name": "parksmap-green"}}}'
+
+oc delete svc/mlbparks-blue -n ${GUID}-parks-prod
+oc delete svc/mlbparks-green -n ${GUID}-parks-prod
+oc expose dc mlbparks-green -l type=parksmap-backend --port 8080 -n ${GUID}-parks-prod
+oc expose dc mlbparks-blue --port 8080 -n ${GUID}-parks-prod
+
+
+oc delete svc/nationalparks-blue -n ${GUID}-parks-prod
+oc delete svc/nationalparks-green -n ${GUID}-parks-prod
+oc expose dc nationalparks-green -l type=parksmap-backend --port 8080 -n ${GUID}-parks-prod
+oc expose dc nationalparks-blue --port 8080 -n ${GUID}-parks-prod
+
