@@ -2,15 +2,6 @@ apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: parks-dev
-message: |-
-  The following service(s) have been created in your project: ${DATABASE_SERVICE_NAME}.
-
-         Username: ${MONGODB_USER}
-         Password: ${MONGODB_PASSWORD}
-    Database Name: ${MONGODB_DATABASE}
-   Connection URL: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${DATABASE_SERVICE_NAME}/${MONGODB_DATABASE}
-
-  For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/mongodb-container/blob/master/3.2/README.md.
 metadata:
   annotations:
     description: |-
@@ -31,143 +22,90 @@ metadata:
 
 objects:
 
-- apiVersion: v1
-  kind: Secret
+- kind: Service
+  apiVersion: v1
   metadata:
+    name: "mongodb-internal"
+    labels:
+      name: "mongodb"
     annotations:
-      template.openshift.io/expose-admin_password: '{.data[''database-admin-password'']}'
-      template.openshift.io/expose-database_name: '{.data[''database-name'']}'
-      template.openshift.io/expose-password: '{.data[''database-password'']}'
-      template.openshift.io/expose-username: '{.data[''database-user'']}'
-    name: ${DATABASE_SERVICE_NAME}
-  stringData:
-    database-admin-password: ${MONGODB_ADMIN_PASSWORD}
-    database-name: ${MONGODB_DATABASE}
-    database-password: ${MONGODB_PASSWORD}
-    database-user: ${MONGODB_USER}
+      service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  spec:
+    clusterIP: None
+    ports:
+      - name: mongodb
+        port: 27017
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
 
 - apiVersion: v1
   kind: Service
   metadata:
-    annotations:
-      template.openshift.io/expose-uri: mongodb://{.spec.clusterIP}:{.spec.ports[?(.name=="mongo")].port}
     name: ${DATABASE_SERVICE_NAME}
+    labels:
+      name: ${DATABASE_SERVICE_NAME}
   spec:
     ports:
-    - name: mongo
-      nodePort: 0
+    - name: mongodb
       port: 27017
-      protocol: TCP
-      targetPort: 27017
     selector:
       name: ${DATABASE_SERVICE_NAME}
-    sessionAffinity: None
-    type: ClusterIP
-  status:
-    loadBalancer: {}
 
-- apiVersion: v1
-  kind: PersistentVolumeClaim
+- apiVersion: apps/v1
+  kind: StatefulSet
   metadata:
     name: ${DATABASE_SERVICE_NAME}
   spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: ${VOLUME_CAPACITY}
-
-- apiVersion: apps.openshift.io/v1
-  kind: DeploymentConfig
-  metadata:
-    annotations:
-      template.alpha.openshift.io/wait-for-ready: "true"
-    name: ${DATABASE_SERVICE_NAME}
-  spec:
-    replicas: 1
+    serviceName: "mongodb-internal"
+    replicas: 3
     selector:
-      name: ${DATABASE_SERVICE_NAME}
-    strategy:
-      type: Recreate
+      matchLabels:
+        name: ${DATABASE_SERVICE_NAME}
     template:
       metadata:
         labels:
           name: ${DATABASE_SERVICE_NAME}
       spec:
         containers:
-        - capabilities: {}
-          env:
-          - name: MONGODB_USER
-            valueFrom:
-              secretKeyRef:
-                key: database-user
-                name: ${DATABASE_SERVICE_NAME}
-          - name: MONGODB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: database-password
-                name: ${DATABASE_SERVICE_NAME}
-          - name: MONGODB_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: database-admin-password
-                name: ${DATABASE_SERVICE_NAME}
-          - name: MONGODB_DATABASE
-            valueFrom:
-              secretKeyRef:
-                key: database-name
-                name: ${DATABASE_SERVICE_NAME}
-          image: ' '
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            initialDelaySeconds: 30
-            tcpSocket:
-              port: 27017
-            timeoutSeconds: 1
-          name: mongodb
-          ports:
-          - containerPort: 27017
-            protocol: TCP
-          readinessProbe:
-            exec:
-              command:
-              - /bin/sh
-              - -i
-              - -c
-              - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
-                --eval="quit()"
-            initialDelaySeconds: 3
-            timeoutSeconds: 1
+          - name: mongo-container
+            image: "registry.access.redhat.com/rhscl/mongodb-34-rhel7:latest"
+            ports:
+              - containerPort: 27017
+            args:
+              - "run-mongod-replication"
+            volumeMounts:
+              - name: ${DATABASE_SERVICE_NAME}-data
+                mountPath: "/var/lib/mongodb/data"
+            env:
+              - name: MONGODB_USER
+                value: ${MONGODB_USER} 
+              - name: MONGODB_PASSWORD
+                value: ${MONGODB_PASSWORD}
+              - name: MONGODB_ADMIN_PASSWORD
+                value: ${MONGODB_ADMIN_PASSWORD}
+              - name: MONGODB_DATABASE
+                value: ${MONGODB_DATABASE}
+              - name: MONGODB_REPLICA_NAME
+                value: "rs0"
+              - name: MONGODB_SERVICE_NAME
+                value: "mongodb-internal"
+              - name: MONGODB_KEYFILE_VALUE
+                value: "12345678901234567890"
+            readinessProbe:
+              exec:
+                command:
+                  - stat
+                  - /tmp/initialized
+    volumeClaimTemplates:
+      - metadata:
+          name: ${DATABASE_SERVICE_NAME}-data
+          labels:
+            name: ${DATABASE_SERVICE_NAME}
+        spec:
+          accessModes: [ ReadWriteOnce ]
           resources:
-            limits:
-              memory: ${MEMORY_LIMIT}
-          securityContext:
-            capabilities: {}
-            privileged: false
-          terminationMessagePath: /dev/termination-log
-          volumeMounts:
-          - mountPath: /var/lib/mongodb/data
-            name: ${DATABASE_SERVICE_NAME}-data
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        volumes:
-        - name: ${DATABASE_SERVICE_NAME}-data
-          persistentVolumeClaim:
-            claimName: ${DATABASE_SERVICE_NAME}
-    triggers:
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - mongodb
-        from:
-          kind: ImageStreamTag
-          name: mongodb:${MONGODB_VERSION}
-          namespace: ${NAMESPACE}
-        lastTriggeredImage: ""
-      type: ImageChange
-    - type: ConfigChange
-  status: {}
-
+            requests:
+              storage: "4Gi"  
 
 - apiVersion: v1
   kind: ConfigMap
