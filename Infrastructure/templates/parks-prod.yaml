@@ -28,7 +28,9 @@ metadata:
     openshift.io/support-url: https://access.redhat.com
     tags: database,mongodb
   name: parks-dev
+
 objects:
+
 - apiVersion: v1
   kind: Secret
   metadata:
@@ -43,6 +45,7 @@ objects:
     database-name: ${MONGODB_DATABASE}
     database-password: ${MONGODB_PASSWORD}
     database-user: ${MONGODB_USER}
+
 - apiVersion: v1
   kind: Service
   metadata:
@@ -62,6 +65,7 @@ objects:
     type: ClusterIP
   status:
     loadBalancer: {}
+
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
@@ -72,6 +76,7 @@ objects:
     resources:
       requests:
         storage: ${VOLUME_CAPACITY}
+
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -230,6 +235,9 @@ objects:
           deploymentconfig: mlbparks-green
       spec:
         containers:
+          - env:
+            - name: APPNAME
+              value: "MLB Parks (Green)"
           - envFrom:
               - configMapRef:
                   name: mlbparks
@@ -303,6 +311,9 @@ objects:
           deploymentconfig: mlbparks-blue
       spec:
         containers:
+          - env:
+            - name: APPNAME
+              value: "MLB Parks (Blue)"
           - envFrom:
               - configMapRef:
                   name: mlbparks
@@ -376,6 +387,9 @@ objects:
           deploymentconfig: nationalparks-blue
       spec:
         containers:
+          - env:
+            - name: APPNAME
+              value: "National Parks (Blue)"
           - envFrom:
               - configMapRef:
                   name: nationalparks
@@ -449,6 +463,9 @@ objects:
           deploymentconfig: nationalparks-green
       spec:
         containers:
+          - env:
+            - name: APPNAME
+              value: "National Parks (Green)"
           - envFrom:
               - configMapRef:
                   name: nationalparks
@@ -522,6 +539,9 @@ objects:
           deploymentconfig: parksmap-green
       spec:
         containers:
+          - env:
+            - name: APPNAME
+              value: "ParksMap (Green)"
           - envFrom:
               - configMapRef:
                   name: parksmap
@@ -597,6 +617,9 @@ objects:
           deploymentconfig: parksmap-blue
       spec:
         containers:
+          - env:
+            - name: APPNAME
+              value: "ParksMap (Blue)"
           - envFrom:
               - configMapRef:
                   name: parksmap
