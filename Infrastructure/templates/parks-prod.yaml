@@ -117,6 +117,7 @@ objects:
     DB_USERNAME: ${MONGODB_USER}
     DB_PASSWORD: ${MONGODB_PASSWORD}
     DB_NAME: "parks"
+    DB_REPLICASET: "rs0"
     APPNAME: "MLB Parks (Green)"
 
 - apiVersion: v1
@@ -129,6 +130,7 @@ objects:
     DB_USERNAME: ${MONGODB_USER}
     DB_PASSWORD: ${MONGODB_PASSWORD}
     DB_NAME: "parks"
+    DB_REPLICASET: "rs0"
     APPNAME: "National Parks (Green)"
 
 - apiVersion: v1
