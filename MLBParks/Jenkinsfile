@@ -153,7 +153,7 @@ podTemplate(
     sh "oc expose dc ${destApp} -l type=parksmap-backend --port 8080 -n ${GUID}-parks-prod"
     sh "oc expose dc ${activeApp} --port 8080 -n ${GUID}-parks-prod"
     
-    sh "oc scale dc ${activeApp} --replicas=0 -n ${GUID}-parks-prod"
+    sh "oc idle ${activeApp} -n ${GUID}-parks-prod"
 
   }
 

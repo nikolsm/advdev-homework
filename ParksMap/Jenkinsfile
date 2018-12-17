@@ -96,7 +96,9 @@ podTemplate(
   // Run Integration Tests in the Development Environment.
   stage('Integration Tests') {
     echo "Running Integration Tests"
-    // TBD
+    sleep 15
+    
+    sh "curl -i -H 'Content-Length: 0' -X GET http://parksmap.${GUID}-parks-dev.svc.cluster.local:8080/ws/info/"
   }
 
   // Copy Image to Nexus Docker Registry
@@ -145,7 +147,7 @@ podTemplate(
   
     sh 'oc patch route parksmap -n ${GUID}-parks-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
     
-    sh "oc scale dc ${activeApp} --replicas=0 -n ${GUID}-parks-prod"
+    sh "oc idle ${activeApp} -n ${GUID}-parks-prod"
 
   }
 
