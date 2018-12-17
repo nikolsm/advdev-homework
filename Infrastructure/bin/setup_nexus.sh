@@ -41,8 +41,8 @@ while : ; do
 done
 
 # will need to figure this out later. don't have time right now.
-echo "wait for few  minutes for nexus to fully come up"
-sleep 120
+echo "wait for 3  minutes for nexus to fully come up"
+sleep 180
 
 
 echo "Configuring Nexus for applications binaries repository and docker image registry"
