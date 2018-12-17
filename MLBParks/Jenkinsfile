@@ -1,4 +1,4 @@
-// Jenkinsfile for Nationalparks
+// Jenkinsfile for MLBParks
 podTemplate(
   label: "skopeo-pod",
   cloud: "openshift",
@@ -21,7 +21,7 @@ podTemplate(
     // Also copy "../nexus_settings.xml" to your build directory
     // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
 
-  def contextDir = "Nationalparks"
+  def contextDir = "MLBParks"
 
   def mvnCmd = "mvn -s ../nexus_settings.xml"
      
