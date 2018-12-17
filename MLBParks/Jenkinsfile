@@ -98,7 +98,7 @@ podTemplate(
     echo "Running Integration Tests"
     sleep 15
 
-    sh "curl -i -H 'Content-Length: 0' -X GET http://mlbparks.${GUID}-parks-dev.dev.svc.cluster.local:8080/ws/info/"
+    sh "curl -i -H 'Content-Length: 0' -X GET http://mlbparks.${GUID}-parks-dev.svc.cluster.local:8080/ws/info/"
   
   }
 
