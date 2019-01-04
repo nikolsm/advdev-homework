@@ -181,7 +181,7 @@ objects:
             envFrom:
               - configMapRef:
                   name: mlbparks
-            image: 'docker-registry.default.svc:5000/9563-parks-dev/mlbparks:0.0-0'
+            image: 'docker-registry.default.svc:5000/fd7f-parks-dev/mlbparks:0.0-0'
             imagePullPolicy: IfNotPresent
             livenessProbe:
               exec:
@@ -257,7 +257,7 @@ objects:
             envFrom:
               - configMapRef:
                   name: mlbparks
-            image: 'docker-registry.default.svc:5000/9563-parks-dev/mlbparks:0.0-0'
+            image: 'docker-registry.default.svc:5000/fd7f-parks-dev/mlbparks:0.0-0'
             imagePullPolicy: IfNotPresent
             livenessProbe:
               exec:
@@ -333,7 +333,7 @@ objects:
             envFrom:
               - configMapRef:
                   name: nationalparks
-            image: 'docker-registry.default.svc:5000/9563-parks-dev/nationalparks:0.0-0'
+            image: 'docker-registry.default.svc:5000/fd7f-parks-dev/nationalparks:0.0-0'
             imagePullPolicy: IfNotPresent
             livenessProbe:
               exec:
@@ -409,7 +409,7 @@ objects:
             envFrom:
               - configMapRef:
                   name: nationalparks
-            image: 'docker-registry.default.svc:5000/9563-parks-dev/nationalparks:0.0-0'
+            image: 'docker-registry.default.svc:5000/fd7f-parks-dev/nationalparks:0.0-0'
             imagePullPolicy: IfNotPresent
             livenessProbe:
               exec:
@@ -482,7 +482,7 @@ objects:
           - env:
               - name: APPNAME
                 value: "ParksMap (Green)"
-            image: 'docker-registry.default.svc:5000/9563-parks-dev/parksmap:0.0-0'
+            image: 'docker-registry.default.svc:5000/fd7f-parks-dev/parksmap:0.0-0'
             imagePullPolicy: IfNotPresent
             name: parksmap-green
             livenessProbe:
@@ -557,7 +557,7 @@ objects:
           - env:
               - name: APPNAME
                 value: "ParksMap (Blue)"
-            image: 'docker-registry.default.svc:5000/9563-parks-dev/parksmap:0.0-0'
+            image: 'docker-registry.default.svc:5000/fd7f-parks-dev/parksmap:0.0-0'
             imagePullPolicy: IfNotPresent
             name: parksmap-blue
             livenessProbe:
@@ -722,7 +722,7 @@ objects:
   subjects:
     - kind: ServiceAccount
       name: jenkins
-      namespace: 9563-jenkins
+      namespace: fd7f-jenkins
 
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: RoleBinding
