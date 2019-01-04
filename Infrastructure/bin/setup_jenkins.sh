@@ -28,4 +28,4 @@ echo "Setting up Jenkins in project ${GUID}-jenkins from Git Repo ${REPO} for Cl
 
 # To be Implemented by Student
 
-oc new-app -f ../templates/jenkins.yaml -n ${GUID}-jenkins
+oc new-app -f ./Infrastructure/templates/jenkins.yaml -n ${GUID}-jenkins

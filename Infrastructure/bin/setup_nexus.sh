@@ -30,7 +30,7 @@ echo "Setting up Nexus in project $GUID-nexus"
 
 # To be Implemented by Student
 
-oc new-app -f ../templates/nexus.yaml -n 9563-nexus
+oc new-app -f ./Infrastructure/templates/nexus.yaml -n 9563-nexus
 
 while : ; do
   echo "Checking if Nexus is Ready..."
@@ -47,4 +47,4 @@ sleep 180
 
 echo "Configuring Nexus for applications binaries repository and docker image registry"
 
-./configure_nexus.sh admin admin123 http://nexus3-${GUID}-nexus.apps.na39.openshift.opentlc.com
+./Infrastructure/templates/configure_nexus.sh admin admin123 http://nexus3-${GUID}-nexus.apps.na39.openshift.opentlc.com

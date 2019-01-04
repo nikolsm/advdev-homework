@@ -14,5 +14,5 @@ echo "Setting up Parks Production Environment in project ${GUID}-parks-prod"
 
 # To be Implemented by Student
 
-oc new-app -f ../templates/parks-prod.yaml -n $GUID-parks-prod
+oc new-app -f ./Infrastructure/templates/parks-prod.yaml -n $GUID-parks-prod
 
