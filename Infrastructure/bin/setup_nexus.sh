@@ -47,4 +47,4 @@ sleep 180
 
 echo "Configuring Nexus for applications binaries repository and docker image registry"
 
-./Infrastructure/templates/configure_nexus.sh admin admin123 http://nexus3-${GUID}-nexus.apps.na39.openshift.opentlc.com
+./Infrastructure/templates/configure_nexus.sh admin admin123 http://nexus3-${GUID}-nexus.apps.na311.openshift.opentlc.com

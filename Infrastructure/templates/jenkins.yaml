@@ -400,4 +400,4 @@ parameters:
 - description: CLUSTER
   displayName: CLUSTER
   name: CLUSTER
-  value: "na39.openshift.opentlc.com"
+  value: "na311.openshift.opentlc.com"
