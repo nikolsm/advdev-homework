@@ -371,7 +371,7 @@ parameters:
 - description: CPU Request
   displayName: CPU Request
   name: CPU_REQUEST
-  value: "2"
+  value: "1"
 - description: Maximum amount of memory the container can use.
   displayName: Memory Limit
   name: MEMORY_LIMIT
@@ -379,7 +379,7 @@ parameters:
 - description: Maximum amount of memory the container can use.
   displayName: CPU Limit
   name: CPU_LIMIT
-  value: "4"
+  value: "2"
 - description: Volume space available for data, e.g. 512Mi, 2Gi.
   displayName: Volume Capacity
   name: VOLUME_CAPACITY

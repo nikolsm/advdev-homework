@@ -62,7 +62,7 @@ objects:
             timeoutSeconds: 3
           resources:
             limits:
-              cpu: "2"
+              cpu: "1"
               memory: 2Gi
             requests:
               cpu: "1"
